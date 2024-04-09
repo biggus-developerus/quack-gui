@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quack"
+description = "A simple and easy-to-use GUI framework for Pygame"
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+version = "0.1.0"
+requires-python = ">=3.10.0"
+
+dependencies = []
+
+[project.urls]
+"Homepage" = "https://github.com/kaJob-dev/quack"
+"Bug Tracker" = "https://github.com/kaJob-dev/quack/issues"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
