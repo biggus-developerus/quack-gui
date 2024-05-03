@@ -1,18 +1,26 @@
 __all__ = ("App",)
 
-from typing import Callable, Any, Coroutine, Optional
-
 import asyncio
 import time
+
 import pygame
 
-from quack.abc import Drawable
-from quack.font import FontManager, Text
-from quack.rect import Rect
+from quack.dispatcher import Dispatcher
+from quack.element_manager import ElementManager
 
 
-class App:
-    def __init__(self, w: int, h: int, *, caption: str = "Quack App", display_flags: int = pygame.SHOWN, tick: int = 60) -> None:
+class App(ElementManager):
+    def __init__(
+        self,
+        w: int,
+        h: int,
+        *,
+        caption: str = "Quack App",
+        display_flags: int = pygame.SHOWN,
+        tick: int = 60,
+    ) -> None:
+        super().__init__()
+
         pygame.display.set_caption(caption)
 
         self._screen = pygame.display.set_mode((w, h), flags=display_flags)
@@ -22,48 +30,12 @@ class App:
         self._running: bool = False
 
         self.tick: int = tick
+        self.frames_per_sec: int = 0
 
-        self._background_colour: tuple[int, int, int] = (0, 0, 0)
-
-        self._drawables: list[Drawable] = []
-        self._pre_draw_cb: Optional[Callable[..., Coroutine[Any, Any, Any]]] = None
-
-        self._frames_per_sec: int = 0
+        self.background_colour: tuple[int, int, int] = (0, 0, 0)
 
     def set_background_colour(self, r: int, g: int, b: int) -> None:
         self._background_colour = (r, g, b)
-
-    def add_inputbox(
-        self,
-        w_and_h: tuple[int, int],
-        position: tuple[int, int],
-        *,
-        colour: tuple[int, int, int] = (255, 255, 255),
-        border_width: int = 3,
-        border_radius=50,
-    ) -> Rect:
-        self._drawables.append(
-            rect := Rect(*position, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
-        )
-        return rect
-
-    def add_text(
-        self,
-        text: str,
-        size: int,
-        pos: tuple[int, int],
-        *,
-        font: str = FontManager.get_default_font(),
-        colour: tuple[int, int, int] = (255, 255, 255),
-    ) -> Text:
-        self._drawables.append(text := Text(text, size, font, pos, colour=colour))
-        return text
-
-    def add_pre_draw_cb(self, cb: Callable[..., Coroutine[Any, Any, Any]]) -> None:
-        if not asyncio.iscoroutinefunction(cb):
-            raise ValueError("Pre draw callback must be an async func!")
-        
-        self._pre_draw_cb = cb
 
     def get_fps(self) -> int:
         return self._frames_per_sec
@@ -75,35 +47,30 @@ class App:
 
     async def _draw_loop(self) -> None:
         last_tick = time.time()
-        frames = 0
-    
+        ticks = 0
+
         while self._running:
             self._screen.fill(self._background_colour)
 
-            if self._pre_draw_cb:
-                await self._pre_draw_cb(self)
-
-            for drawable in self._drawables:
-                drawable.draw(self._screen)
+            for element in self.get_elements():
+                element.draw(self._screen)
 
             pygame.display.flip()
 
-            frames += 1
+            ticks += 1
 
-            if (elapsed:=(ctime:=time.time()) - last_tick) >= 1.0:
-                self._frames_per_sec = frames / elapsed
-                
-                frames = 0
+            if (elapsed := (ctime := time.time()) - last_tick) >= 1.0:
+                self._frames_per_sec = ticks / elapsed
+
+                ticks = 0
                 last_tick = ctime
 
             await asyncio.sleep(1 / self.tick)
 
     async def _handle_events(self) -> None:
         while self._running:
-            event: pygame.event.Event = await self._asyncio_queue.get()
-
-            if event.type == pygame.QUIT:
-                self.stop()
+            event = await self._asyncio_queue.get()
+            Dispatcher.dispatch(self._loop, event.type, self, event)
 
         self.stop()
 

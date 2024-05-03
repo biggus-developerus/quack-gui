@@ -1,10 +1,10 @@
-__all__ = ("Drawable",)
+__all__ = ("Element",)
 
 from abc import ABC, abstractmethod
 
 import pygame
 
 
-class Drawable(ABC):
+class Element(ABC):
     @abstractmethod
     def draw(self, surface: pygame.Surface) -> None: ...

@@ -2,10 +2,10 @@ __all__ = ("Rect",)
 
 import pygame
 
-from quack.abc import Drawable
+from quack.abc import Element
 
 
-class Rect(Drawable):
+class Rect(Element):
     def __init__(
         self,
         x: int,
