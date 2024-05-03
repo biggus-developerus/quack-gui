@@ -26,6 +26,8 @@ class Text(Element):
         *,
         colour: tuple[int, int, int] = (255, 255, 255),
     ) -> None:
+        super().__init__()
+
         self.text: str = text
         self.size: int = size
         self.font_properties: FontProperty = Font.get_text_properties(text)
@@ -48,6 +50,12 @@ class Text(Element):
 
         self._surface = self.font.make_surface(self.text, 1, self.colour)
         surface.blit(self._surface, self.pos)
+
+    def get_rect(self) -> pygame.Rect:
+        if not self._surface:
+            self._surface = self.font.make_surface(self.text, 1, self.colour)
+
+        return pygame.Rect((*self.pos, *self._surface.get_size()))
 
     def __setattr__(self, name: str, value: Any) -> None:
         if name in self._dynamic_attrs:

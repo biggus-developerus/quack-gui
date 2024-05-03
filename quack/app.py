@@ -5,7 +5,8 @@ import time
 
 import pygame
 
-from quack.dispatcher import Dispatcher
+import quack.internal_events as internal_events
+from quack.dispatcher import Dispatcher, EventContext
 from quack.element_manager import ElementManager
 
 
@@ -38,12 +39,19 @@ class App(ElementManager):
         self._background_colour = (r, g, b)
 
     def get_fps(self) -> int:
-        return self._frames_per_sec
+        return self.frames_per_sec
 
     def _pygame_event_loop(self) -> None:
         while True:
             event = pygame.event.wait()
             asyncio.run_coroutine_threadsafe(self._asyncio_queue.put(event), self._loop)
+
+    async def _handle_events(self) -> None:
+        while self._running:
+            event = await self._asyncio_queue.get()
+            Dispatcher.dispatch(self._loop, event.type, self, event)
+
+        self.stop()
 
     async def _draw_loop(self) -> None:
         last_tick = time.time()
@@ -60,21 +68,20 @@ class App(ElementManager):
             ticks += 1
 
             if (elapsed := (ctime := time.time()) - last_tick) >= 1.0:
-                self._frames_per_sec = ticks / elapsed
+                self.frames_per_sec = ticks / elapsed
 
                 ticks = 0
                 last_tick = ctime
 
             await asyncio.sleep(1 / self.tick)
 
-    async def _handle_events(self) -> None:
-        while self._running:
-            event = await self._asyncio_queue.get()
-            Dispatcher.dispatch(self._loop, event.type, self, event)
-
-        self.stop()
+    def _init_internal_events(self) -> None:
+        Dispatcher.add_event(pygame.QUIT, internal_events.on_quit)
+        Dispatcher.add_event(pygame.MOUSEBUTTONDOWN, internal_events.on_mouse_button_down)
 
     def run(self) -> None:
+        self._init_internal_events()
+
         self._running = True
 
         t1 = self._loop.run_in_executor(None, self._pygame_event_loop)

@@ -1,5 +1,7 @@
 __all__ = ("Rect",)
 
+from typing import Optional
+
 import pygame
 
 from quack.abc import Element
@@ -8,8 +10,7 @@ from quack.abc import Element
 class Rect(Element):
     def __init__(
         self,
-        x: int,
-        y: int,
+        pos: tuple[int, int],
         width: int,
         height: int,
         colour: tuple[int, int, int],
@@ -17,8 +18,9 @@ class Rect(Element):
         border_width: int = 0,
         border_radius: int = 0,
     ) -> None:
-        self.x: int = x
-        self.y: int = y
+        super().__init__()
+
+        self.pos: tuple[int, int] = pos
 
         self.width: int = width
         self.height: int = height
@@ -32,7 +34,10 @@ class Rect(Element):
         pygame.draw.rect(
             surface,
             self.colour,
-            (self.x, self.y, self.width, self.height),
+            (*self.pos, self.width, self.height),
             width=self.border_width,
             border_radius=self.border_radius,
         )
+
+    def get_rect(self) -> pygame.Rect:
+        return pygame.Rect(*self.pos, self.width, self.height)

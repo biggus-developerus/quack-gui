@@ -23,7 +23,7 @@ class ElementManager:
         border_radius=50,
     ) -> Rect:
         self._elements[inputbox_name] = (
-            rect := Rect(*position, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
+            rect := Rect(position, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
         )
         return rect
 

@@ -1,10 +1,16 @@
 __all__ = (
     "Dispatcher",
     "Event",
+    "EventContext",
 )
 
 import asyncio
-from typing import Any, Callable, Coroutine, Optional
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Optional
+
+if TYPE_CHECKING:
+    from quack.abc import Element
+    from quack.app import App
 
 T = Callable[..., Coroutine[Any, Any, Any]]
 
@@ -13,6 +19,13 @@ class Event:
     def __init__(self, cb: T, done_cb: Optional[Callable] = None) -> None:
         self.cb: T = cb
         self.done_cb: Optional[Callable] = done_cb
+
+
+@dataclass
+class EventContext:
+    app: Optional["App"] = None
+    element: Optional["Element"] = None
+    mouse_pos: Optional[tuple[int, int]] = None
 
 
 class Dispatcher:
