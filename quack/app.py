@@ -3,7 +3,7 @@ __all__ = ("App",)
 from typing import Callable, Any, Coroutine, Optional
 
 import asyncio
-
+import time
 import pygame
 
 from quack.abc import Drawable
@@ -26,8 +26,9 @@ class App:
         self._background_colour: tuple[int, int, int] = (0, 0, 0)
 
         self._drawables: list[Drawable] = []
-
         self._pre_draw_cb: Optional[Callable[..., Coroutine[Any, Any, Any]]] = None
+
+        self._frames_per_sec: int = 0
 
     def set_background_colour(self, r: int, g: int, b: int) -> None:
         self._background_colour = (r, g, b)
@@ -64,12 +65,18 @@ class App:
         
         self._pre_draw_cb = cb
 
+    def get_fps(self) -> int:
+        return self._frames_per_sec
+
     def _pygame_event_loop(self) -> None:
         while True:
             event = pygame.event.wait()
             asyncio.run_coroutine_threadsafe(self._asyncio_queue.put(event), self._loop)
 
     async def _draw_loop(self) -> None:
+        last_tick = time.time()
+        frames = 0
+    
         while self._running:
             self._screen.fill(self._background_colour)
 
@@ -80,12 +87,21 @@ class App:
                 drawable.draw(self._screen)
 
             pygame.display.flip()
+
+            frames += 1
+
+            if (elapsed:=(ctime:=time.time()) - last_tick) >= 1.0:
+                self._frames_per_sec = frames / elapsed
+                
+                frames = 0
+                last_tick = ctime
+
             await asyncio.sleep(1 / self.tick)
 
     async def _handle_events(self) -> None:
         while self._running:
             event: pygame.event.Event = await self._asyncio_queue.get()
-            
+
             if event.type == pygame.QUIT:
                 self.stop()
 
@@ -98,16 +114,13 @@ class App:
         t2 = self._loop.create_task(self._handle_events())
         t3 = self._loop.create_task(self._draw_loop())
 
-        try:
-            self._loop.run_forever()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            t1.cancel()
-            t2.cancel()
-            t3.cancel()
+        self._loop.run_forever()
 
-            pygame.quit()
+        t1.cancel()
+        t2.cancel()
+        t3.cancel()
+
+        pygame.quit()
 
     def stop(self) -> None:
         self._running = False

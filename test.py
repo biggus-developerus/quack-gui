@@ -16,17 +16,26 @@ text = app.add_text(
     (175, 10),
 )
 
+fps_text = app.add_text(
+    "**FPS - {}**",
+    40,
+    (0, 0)
+)
+
 app.add_inputbox((300, 30), (100, 250), border_width=3, border_radius=0)
 app.add_inputbox((300, 30), (100, 300), border_width=3)
 
 async def cool_cb(app: quack.App) -> None:
     global h, s, v, h_inc, s_inc, v_inc
 
+
     r, g, b = colorsys.hsv_to_rgb(h, s, v)
     r = int(r * 255)
     g = int(g * 255)
     b = int(b * 255)
 
+    fps_text.text = "**FPS - {}**".format(int(app.get_fps()))
+    fps_text.colour = (r, g, b)
     text.colour = (r, g, b)
 
     if h >= 1:
