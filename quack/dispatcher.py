@@ -1,4 +1,7 @@
-__all__ = ("Dispatcher", "Event",)
+__all__ = (
+    "Dispatcher",
+    "Event",
+)
 
 import asyncio
 from typing import Any, Callable, Coroutine, Optional

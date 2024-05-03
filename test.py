@@ -1,4 +1,6 @@
-import quack, pygame
+import pygame
+
+import quack
 
 quack.init()
 
@@ -13,10 +15,12 @@ t = app.add_text(
 )
 
 app.add_text("fps_text", "**FPS - {}**", 40, (0, 0))
-app.add_inputbox("name_inp", (300, 30), (100, 250), border_width=1, border_radius=1) 
+app.add_inputbox("name_inp", (300, 30), (100, 250), border_width=1, border_radius=1)
+
 
 async def quit(*args, **kwargs):
     app.stop()
+
 
 quack.Dispatcher.add_event(pygame.QUIT, quit)
 
