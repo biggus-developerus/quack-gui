@@ -1,7 +1,8 @@
 __all__ = ("Rect",)
+
 import pygame
 
-from .abc import Drawable
+from quack.abc import Drawable
 
 
 class Rect(Drawable):

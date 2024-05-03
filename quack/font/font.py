@@ -5,11 +5,13 @@ __all__ = (
 )
 
 import re
+from typing import Any, Optional
 
 import pygame
 from aenum import IntFlag
 
-from .font_manager import FontManager
+from quack.abc import Drawable
+from quack.font.font_manager import FontManager
 
 BPATT = re.compile(r"\*\*(.*?)\*\*")
 STHRPATT = re.compile(r"~~(.*?)~~")
@@ -79,7 +81,15 @@ class Font:
         return self._pfont.render(remove_markers_from_text(text, self.font_properties), antialias, colour)
 
 
-class Text:
+class Text(Drawable):
+    _dynamic_attrs: list[str] = [
+        "text",
+        "size",
+        "font_properties",
+        "pos",
+        "colour",
+    ]
+
     def __init__(
         self,
         text: str,
@@ -89,17 +99,31 @@ class Text:
         *,
         colour: tuple[int, int, int] = (255, 255, 255),
     ) -> None:
-        font_obj = Font(
+        self.text: str = text
+        self.size: int = size
+        self.font_properties: FontProperty = get_text_properties(text)
+
+        self.font: Font = Font(
             FontManager.get_font(font) or FontManager.get_default_font(),
             size,
-            font_properties=get_text_properties(text),
+            font_properties=self.font_properties,
         )
 
-        self.text: str = text
-        self.font: Font = font_obj
         self.pos: tuple[int, int] = pos
         self.colour: tuple[int, int, int] = colour
-        self.text_surface: pygame.Surface = self.font.make_surface(self.text, 1, self.colour)
+
+        self._surface: Optional[pygame.Surface] = None
 
     def draw(self, surface: pygame.Surface) -> None:
-        surface.blit(self.text_surface, self.pos)
+        if self._surface:
+            surface.blit(self._surface, self.pos)
+            return
+
+        self._surface = self.font.make_surface(self.text, 1, self.colour)
+        surface.blit(self._surface, self.pos)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name in self._dynamic_attrs:
+            self._surface = None
+
+        return super().__setattr__(name, value)
