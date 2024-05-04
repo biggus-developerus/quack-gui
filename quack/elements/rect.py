@@ -18,9 +18,7 @@ class Rect(Element):
         border_width: int = 0,
         border_radius: int = 0,
     ) -> None:
-        super().__init__()
-
-        self.pos: tuple[int, int] = pos
+        super().__init__(pos)
 
         self.width: int = width
         self.height: int = height
@@ -41,3 +39,6 @@ class Rect(Element):
 
     def get_rect(self) -> pygame.Rect:
         return pygame.Rect(*self.pos, self.width, self.height)
+
+    def get_size(self) -> tuple[int, int]:
+        return (self.width, self.height)

@@ -6,7 +6,7 @@ import time
 import pygame
 
 import quack.internal_events as internal_events
-from quack.dispatcher import Dispatcher, EventContext
+from quack.dispatcher import Dispatcher
 from quack.element_manager import ElementManager
 
 
@@ -77,7 +77,8 @@ class App(ElementManager):
 
     def _init_internal_events(self) -> None:
         Dispatcher.add_event(pygame.QUIT, internal_events.on_quit)
-        Dispatcher.add_event(pygame.MOUSEBUTTONDOWN, internal_events.on_mouse_button_down)
+        Dispatcher.add_event(pygame.MOUSEBUTTONUP, internal_events.on_mouse_button_up)
+        Dispatcher.add_event(pygame.MOUSEMOTION, internal_events.on_mouse_move)
 
     def run(self) -> None:
         self._init_internal_events()

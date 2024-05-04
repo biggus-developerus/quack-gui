@@ -12,7 +12,7 @@ async def on_quit(app: "App", _: pygame.event.Event) -> None:
     app.stop()
 
 
-async def on_mouse_button_down(app: "App", event: pygame.event.Event) -> None:
+async def on_mouse_button_up(app: "App", event: pygame.event.Event) -> None:
     pos = event.pos
 
     left = event.button == pygame.BUTTON_LEFT
@@ -30,5 +30,36 @@ async def on_mouse_button_down(app: "App", event: pygame.event.Event) -> None:
             event_ctx.mouse_pos = pos
 
             if left and element._on_click_cb:
-                app._loop.create_task(element._on_click_cb(event_ctx))
+                element.dispatch_click(app._loop, event_ctx)
+
+            break  # what if some retard wants 2 elements in the same place and also wants to trigeger the event for both???? SOB X50 KYS!?
+
+
+async def on_mouse_move(app: "App", event: pygame.event.Event) -> None:
+    pos = event.pos
+    left, middle, right = event.buttons  # TODO: moving elements??!?!?
+
+    event_ctx = EventContext(app)
+    event_ctx.mouse_pos = pos
+
+    for element in app.get_elements():
+        collides = element.get_rect().collidepoint((pos))
+
+        if not collides and element.is_hovered:
+            element.is_hovered = False
+
+            if element._on_hover_exit_cb:
+                event_ctx.element = element
+                event_ctx.mouse_pos = pos
+
+                element.dispatch_hover_exit(app._loop, event_ctx)
+
+            continue
+
+        if collides:
+            event_ctx.element = element
+            element.is_hovered = True
+
+            if element._on_hover_cb:
+                element.dispatch_hover(app._loop, event_ctx)
                 return

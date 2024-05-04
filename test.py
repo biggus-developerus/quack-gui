@@ -1,3 +1,4 @@
+import asyncio
 import random
 
 import quack
@@ -11,28 +12,26 @@ app.add_inputbox("name_inp", (300, 30), (100, 250), border_width=1, border_radiu
 
 title_text = app.add_text(
     "title_text",
-    "**_KEEWL PROXY_**",
-    30,
-    (175, 10),
+    "**_PROXY_**",
+    50,
+    ((app._screen.get_size()[0] - 144) // 2, 10),
 )
 
-fps_text = app.add_text("fps_text", "**FPS - {}**", 40, (0, 0))
+fps_text = app.add_text("fps_text", "**FPS**", 40, (0, 0))
 
 
-@title_text.on_click
-async def title_text_click(ctx: quack.EventContext) -> None:
-    ctx.element.colour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+@title_text.on_hover
+async def title_text_hover(ctx: quack.EventContext) -> None:
+    for i in range(ctx.element.colour[0], 100, -1):
+        ctx.element.colour = (i, i, i)
+        await asyncio.sleep(0.001)
 
 
-@fps_text.on_click
-async def fps_text_click(ctx: quack.EventContext) -> None:
-    ctx.element.colour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    ctx.element.text = "**FPS - {}**".format(int(app.get_fps()))
-
-
-@fps_text.on_hover
-async def fps_text_hover(ctx: quack.EventContext) -> None:
-    ctx.element.colour = (30, 30, 30)
+@title_text.on_hover_exit
+async def title_text_hover_exit(ctx: quack.EventContext) -> None:
+    for i in range(ctx.element.colour[0], 255):
+        ctx.element.colour = (i, i, i)
+        await asyncio.sleep(0.001)
 
 
 app.run()

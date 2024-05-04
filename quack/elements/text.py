@@ -26,7 +26,7 @@ class Text(Element):
         *,
         colour: tuple[int, int, int] = (255, 255, 255),
     ) -> None:
-        super().__init__()
+        super().__init__(pos)
 
         self.text: str = text
         self.size: int = size
@@ -38,27 +38,29 @@ class Text(Element):
             font_properties=self.font_properties,
         )
 
-        self.pos: tuple[int, int] = pos
         self.colour: tuple[int, int, int] = colour
 
-        self._surface: Optional[pygame.Surface] = None
+        self._text_surface: Optional[pygame.Surface] = None
 
     def draw(self, surface: pygame.Surface) -> None:
-        if self._surface:
-            surface.blit(self._surface, self.pos)
+        if self._text_surface:
+            surface.blit(self._text_surface, self.pos)
             return
 
-        self._surface = self.font.make_surface(self.text, 1, self.colour)
-        surface.blit(self._surface, self.pos)
+        self._text_surface = self.font.make_surface(self.text, 1, self.colour)
+        surface.blit(self._text_surface, self.pos)
 
     def get_rect(self) -> pygame.Rect:
-        if not self._surface:
-            self._surface = self.font.make_surface(self.text, 1, self.colour)
+        if not self._text_surface:
+            self._text_surface = self.font.make_surface(self.text, 1, self.colour)
 
-        return pygame.Rect((*self.pos, *self._surface.get_size()))
+        return pygame.Rect((*self.pos, *self._text_surface.get_size()))
+
+    def get_size(self) -> tuple[int, int]:
+        return ((rect := self.get_rect()).x, rect.y)
 
     def __setattr__(self, name: str, value: Any) -> None:
         if name in self._dynamic_attrs:
-            self._surface = None
+            self._text_surface = None
 
         return super().__setattr__(name, value)
