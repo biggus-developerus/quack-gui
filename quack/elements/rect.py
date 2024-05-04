@@ -4,7 +4,7 @@ from typing import Optional
 
 import pygame
 
-from quack.abc import Element
+from quack.element import Element
 
 
 class Rect(Element):

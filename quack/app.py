@@ -78,7 +78,10 @@ class App(ElementManager):
     def _init_internal_events(self) -> None:
         Dispatcher.add_event(pygame.QUIT, internal_events.on_quit)
         Dispatcher.add_event(pygame.MOUSEBUTTONUP, internal_events.on_mouse_button_up)
+        Dispatcher.add_event(pygame.MOUSEBUTTONDOWN, internal_events.on_mouse_button_down)
         Dispatcher.add_event(pygame.MOUSEMOTION, internal_events.on_mouse_move)
+
+        Dispatcher.add_event(pygame.WINDOWLEAVE, internal_events.on_window_leave)
 
     def run(self) -> None:
         self._init_internal_events()

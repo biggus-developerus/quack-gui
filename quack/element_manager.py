@@ -1,6 +1,6 @@
 __all__ = ("ElementManager",)
 
-from quack.abc import Element
+from quack.element import Element
 from quack.elements import Rect, Text
 from quack.font import FontManager
 

@@ -1,5 +1,3 @@
-import asyncio
-
 import quack
 
 quack.init()
@@ -16,29 +14,6 @@ title_text = app.add_text(
     ((app._screen.get_size()[0] - 144) // 2, 10),
 )
 
-fps_text = app.add_text("fps_text", "**FPS**", 40, (0, 0))
-
-
-@title_text.on_hover
-async def title_text_hover(ctx: quack.EventContext) -> None:
-    if ctx.element.colour[0] == 100:
-        ctx.element.colour = (100, 100, 100)
-        return
-    
-    for i in range(ctx.element.colour[0], 100, -1):
-        ctx.element.colour = (i, i, i)
-        await asyncio.sleep(0.001)
-
-
-@title_text.on_hover_exit
-async def title_text_hover_exit(ctx: quack.EventContext) -> None:
-    if ctx.element.colour[0] == 255:
-        ctx.element.colour (255, 255, 255)
-        return
-    
-    for i in range(ctx.element.colour[0], 256):
-        ctx.element.colour = (i, i, i)
-        await asyncio.sleep(0.001)
-
+quack.Animation.apply_hover_anim(quack.AnimationType.HOVER_DIM, title_text)
 
 app.run()

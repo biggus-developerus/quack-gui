@@ -9,8 +9,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Coroutine, Optional
 
 if TYPE_CHECKING:
-    from quack.abc import Element
     from quack.app import App
+    from quack.element import Element
 
 T = Callable[..., Coroutine[Any, Any, Any]]
 

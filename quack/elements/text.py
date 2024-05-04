@@ -4,7 +4,7 @@ from typing import Any, Optional
 
 import pygame
 
-from quack.abc import Element
+from quack.element import Element
 from quack.font import Font, FontManager, FontProperty
 
 
