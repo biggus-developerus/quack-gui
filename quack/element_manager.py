@@ -12,6 +12,12 @@ class ElementManager:
     def get_elements(self) -> list[Element]:
         return list(self._elements.values())
 
+    def add_element(self, element_name: str, element: Element) -> None:
+        self._elements[element_name] = element
+
+    def remove_element(self, name: str) -> None:
+        self._elements.pop(name, None)
+
     def add_inputbox(
         self,
         inputbox_name: str,

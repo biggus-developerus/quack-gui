@@ -89,13 +89,16 @@ class App(ElementManager):
         t2 = self._loop.create_task(self._handle_events())
         t3 = self._loop.create_task(self._draw_loop())
 
-        self._loop.run_forever()
+        try:
+            self._loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            t1.cancel()
+            t2.cancel()
+            t3.cancel()
 
-        t1.cancel()
-        t2.cancel()
-        t3.cancel()
-
-        pygame.quit()
+            pygame.quit()
 
     def stop(self) -> None:
         self._running = False
