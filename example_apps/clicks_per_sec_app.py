@@ -15,7 +15,7 @@ click_text = app.add_text(
     colour=(255, 255, 0),
 )
 
-click_text.apply_animation(quack.AnimationType.HOVER_DIM, 0.01)
+click_text.apply_animation(quack.AnimationType.HOVER_DIM, 0.2)
 click_text.center()
 
 cps_text = app.add_text(
