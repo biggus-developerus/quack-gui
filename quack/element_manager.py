@@ -1,11 +1,15 @@
 __all__ = ("ElementManager",)
 
+from abc import ABC
+
 from quack.element import Element
 from quack.elements import Rect, Text
 from quack.font import FontManager
 
 
-class ElementManager:
+class ElementManager(
+    ABC
+):  # SOB X50 MUST BE INHERITED BY APP AND APP ALONE, OR ELSE Element WOULD GET CONFUSEDDDD!!!!!!!!!!!!!
     def __init__(self) -> None:
         self._elements: list[Element] = []
 
@@ -14,6 +18,7 @@ class ElementManager:
 
     def add_element(self, element: Element) -> None:
         self._elements.append(element)
+        element.set_app(self)
 
     def remove_element(self, element: Element) -> None:
         self._elements.remove(element)
@@ -30,6 +35,7 @@ class ElementManager:
         self._elements.append(
             rect := Rect(position, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
         )
+        rect.set_app(self)
         return rect
 
     def add_text(
@@ -41,5 +47,7 @@ class ElementManager:
         font: str = FontManager.get_default_font(),
         colour: tuple[int, int, int] = (255, 255, 255),
     ) -> Text:
-        self._elements.append(text := Text(text, size, font, pos, colour=colour))
-        return text
+        self._elements.append(text_element := Text(text, size, font, pos, colour=colour))
+        text_element.set_app(self)
+
+        return text_element

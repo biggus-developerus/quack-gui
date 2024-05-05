@@ -54,9 +54,6 @@ class Text(Element):
 
         return pygame.Rect((*self.pos, *self._text_surface.get_size()))
 
-    def get_size(self) -> tuple[int, int]:
-        return ((rect := self.get_rect()).x, rect.y)
-
     def __setattr__(self, name: str, value: Any) -> None:
         if name in self._dynamic_attrs:
             self._text_surface = None

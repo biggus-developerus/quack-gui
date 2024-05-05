@@ -35,6 +35,3 @@ class Rect(Element):
 
     def get_rect(self) -> pygame.Rect:
         return pygame.Rect(*self.pos, self.width, self.height)
-
-    def get_size(self) -> tuple[int, int]:
-        return (self.width, self.height)
