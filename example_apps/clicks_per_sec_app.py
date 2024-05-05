@@ -28,6 +28,7 @@ async def timer(ctx: quack.EventContext) -> None:
         clicks = 0
 
         click_me.text = f"**CLICK ME! {clicks}**"
+        click_me.pos = (500 - click_me.get_rect().width) // 2, 250
 
         return
 
