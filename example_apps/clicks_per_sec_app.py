@@ -25,6 +25,8 @@ async def timer(ctx: quack.EventContext) -> None:
         last_click = time.time()
         clicks = 0
 
+        click_me.text = f"**CLICK ME! {clicks}**"
+
         return
 
     if time.time() - last_click >= 1:
@@ -37,8 +39,8 @@ async def timer(ctx: quack.EventContext) -> None:
 @click_me.on_click
 async def on_click(ctx: quack.EventContext) -> None:
     global clicks
+    clicks += 1
     ctx.element.text = f"**CLICK ME! {clicks}**"
     click_me.pos = (500 - click_me.get_rect().width) // 2, 250
-    clicks += 1
 
 app.run()
