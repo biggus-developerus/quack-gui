@@ -5,10 +5,11 @@ __all__ = (
 
 from quack.dispatcher import EventContext
 
-async def hover_dim(ctx: EventContext, dimming_factor: float = 0.5) -> None:
-    subtract_20 = lambda number: number - 20 if number-20 > -1 else 0 
+async def hover_dim(ctx: EventContext) -> None:
+    if not getattr(ctx.element, "original_colour", None):
+        ctx.element.original_colour = ctx.element.colour
+        
+    ctx.element.colour = (100, 100, 100)
 
-    ctx.element.colour = subtract_20(ctx.element.colour[0]), subtract_20(ctx.element.colour[1]), subtract_20(ctx.element.colour[2])
-
-async def unhover_dim(ctx: EventContext) -> None:
-    ...
+async def unhover_dim(ctx: EventContext) -> None:  
+    ctx.element.colour = ctx.element.original_colour
