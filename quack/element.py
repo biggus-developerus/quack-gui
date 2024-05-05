@@ -65,8 +65,6 @@ class Element(ElementMixin, Animation):
             ElementTaskType.ON_HOVER_EXIT: None,
         }
 
-        self._animation: Optional[Animation] = None
-
     @abstractmethod
     def draw(self, surface: pygame.Surface) -> None: ...
 
@@ -90,9 +88,9 @@ class Element(ElementMixin, Animation):
         if not asyncio.iscoroutinefunction(cb):
             raise ValueError(f"Element event type {cb_type} callback must be a coroutine function")
 
-        if self._animation and self._animation.animation_type == ELEMENT_TASK_TYPE_TO_PYGAME_EVENT[cb_type]:
+        if self.animation_type.value[-1] == ELEMENT_TASK_TYPE_TO_PYGAME_EVENT[cb_type]:
             raise ValueError(
-                f"Callback type conflict: a callback is already set for an element animation ({self._animation.animation_type.name})"
+                f"Callback type conflict: a callback is already set for an element animation ({self.animation_type.name})"
             )
 
         self._callbacks[cb_type] = cb

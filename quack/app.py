@@ -2,12 +2,14 @@ __all__ = ("App",)
 
 import asyncio
 import time
+from typing import Optional
 
 import pygame
 
 import quack.internal_events as internal_events
 from quack.dispatcher import Dispatcher
 from quack.element_manager import ElementManager
+from quack.font import FontManager
 
 
 class App(ElementManager):
@@ -22,9 +24,13 @@ class App(ElementManager):
     ) -> None:
         super().__init__()
 
-        pygame.display.set_caption(caption)
+        pygame.init()
 
-        self._screen = pygame.display.set_mode((w, h), flags=display_flags)
+        self._screen: Optional[pygame.Surface] = None
+
+        self._size: tuple[int, int] = (w, h)
+        self._caption: str = caption
+        self._display_flags: int = display_flags
 
         self._asyncio_queue: asyncio.Queue = asyncio.Queue()
         self._loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
@@ -85,8 +91,12 @@ class App(ElementManager):
 
     def run(self) -> None:
         self._init_internal_events()
-
         self._running = True
+
+        FontManager.init()
+        pygame.display.set_caption(self._caption)
+
+        self._screen = pygame.display.set_mode(self._size, flags=self._display_flags)
 
         t1 = self._loop.run_in_executor(None, self._pygame_event_loop)
         t2 = self._loop.create_task(self._handle_events())

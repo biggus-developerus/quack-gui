@@ -17,8 +17,8 @@ if TYPE_CHECKING:
 
 
 class AnimationType(Enum):
-    NONE = -1
-    HOVER_DIM = pygame.MOUSEMOTION
+    NONE = (0, 0)
+    HOVER_DIM = (1, pygame.MOUSEMOTION)
 
 
 TElement = TypeVar("TElement", bound="Element")
