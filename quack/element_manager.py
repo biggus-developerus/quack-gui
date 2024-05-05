@@ -7,20 +7,19 @@ from quack.font import FontManager
 
 class ElementManager:
     def __init__(self) -> None:
-        self._elements: dict[str, Element] = {}
+        self._elements: list[Element] = []
 
     def get_elements(self) -> list[Element]:
-        return list(self._elements.values())
+        return self._elements
 
-    def add_element(self, element_name: str, element: Element) -> None:
-        self._elements[element_name] = element
+    def add_element(self, element: Element) -> None:
+        self._elements.append(element)
 
-    def remove_element(self, name: str) -> None:
-        self._elements.pop(name, None)
+    def remove_element(self, element: Element) -> None:
+        self._elements.remove(element)
 
     def add_inputbox(
         self,
-        inputbox_name: str,
         w_and_h: tuple[int, int],
         position: tuple[int, int],
         *,
@@ -28,14 +27,13 @@ class ElementManager:
         border_width: int = 3,
         border_radius=50,
     ) -> Rect:
-        self._elements[inputbox_name] = (
+        self._elements.append(
             rect := Rect(position, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
         )
         return rect
 
     def add_text(
         self,
-        text_name: str,
         text: str,
         size: int,
         pos: tuple[int, int],
@@ -43,5 +41,5 @@ class ElementManager:
         font: str = FontManager.get_default_font(),
         colour: tuple[int, int, int] = (255, 255, 255),
     ) -> Text:
-        self._elements[text_name] = (text := Text(text, size, font, pos, colour=colour))
+        self._elements.append(text := Text(text, size, font, pos, colour=colour))
         return text
