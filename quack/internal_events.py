@@ -31,9 +31,7 @@ async def on_mouse_button_up(app: "App", event: pygame.event.Event) -> None:
             event_ctx.mouse_pos = pos
 
             if left:
-                element.call_cb(app._loop, ElementTaskType.ON_CLICK_UP, event_ctx)
-
-            break  # what if some retard wants 2 elements in the same place and also wants to trigeger the event for both???? SOB X50 KYS!?
+                await element.call_cb(app._loop, ElementTaskType.ON_CLICK_UP, event_ctx)
 
 
 async def on_mouse_button_down(app: "App", event: pygame.event.Event) -> None:
@@ -54,9 +52,7 @@ async def on_mouse_button_down(app: "App", event: pygame.event.Event) -> None:
             event_ctx.mouse_pos = pos
 
             if left:
-                element.call_cb(app._loop, ElementTaskType.ON_CLICK, event_ctx)
-
-            break  # what if some retard wants 2 elements in the same place and also wants to trigeger the event for both???? SOB X50 KYS!?
+                await element.call_cb(app._loop, ElementTaskType.ON_CLICK, event_ctx)
 
 
 async def on_mouse_move(app: "App", event: pygame.event.Event) -> None:
@@ -74,22 +70,24 @@ async def on_mouse_move(app: "App", event: pygame.event.Event) -> None:
                 element.is_hovered = False
 
                 event_ctx.element = element
-                element.call_cb(app._loop, ElementTaskType.ON_HOVER_EXIT, event_ctx)
+                await element.call_cb(app._loop, ElementTaskType.ON_HOVER_EXIT, event_ctx)
 
             if element.is_clicked:
                 element.is_clicked = False
 
                 event_ctx.element = element
-                element.call_cb(app._loop, ElementTaskType.ON_CLICK_UP, event_ctx)
+                await element.call_cb(app._loop, ElementTaskType.ON_CLICK_UP, event_ctx)
 
             continue
 
         if collides:
+            if element.is_hovered:
+                continue
+
             event_ctx.element = element
             element.is_hovered = True
 
-            element.call_cb(app._loop, ElementTaskType.ON_HOVER, event_ctx)
-            return
+            await element.call_cb(app._loop, ElementTaskType.ON_HOVER, event_ctx)
 
 
 async def on_window_leave(app: "App", event: pygame.event.Event) -> None: ...

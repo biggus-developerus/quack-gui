@@ -1,17 +1,21 @@
-import random
 import time
 
 import quack
 
-app = quack.App(500, 500)
+app = quack.App((700, 700), tick=165)
 app.set_background_colour(20, 20, 20)
 
-click_me = app.add_text("**CLICK ME!**", 100, (0, 0), colour=(255, 255, 0))
-click_me.apply_animation(quack.AnimationType.HOVER_DIM)
-click_me.pos = (500 - click_me.get_rect().width) // 2, 250
+cps_box = app.add_rect(app.get_size(), (0, 0), colour=(0, 0, 0), border_width=-1)
+
+click_text = app.add_text("**CLICK!**", 100, (0, 0), colour=(255, 255, 0))
+click_text.pos = (app.get_width() - click_text.get_rect().width) // 2, app.get_height() // 2
+click_text.apply_animation(quack.AnimationType.HOVER_DIM, 0.01)
 
 cps_text = app.add_text("__YOUR CPS IS: 0__", 50, (0, 0), colour=(0, 255, 0))
-cps_text.pos = (500 - cps_text.get_rect().width) // 2, 0
+cps_text.pos = (app.get_width() - cps_text.get_rect().width) // 2, 0
+
+fps_text = app.add_text("__YOUR FPS IS: 0__", 30, (0, 0), colour=(0, 0, 255))
+fps_text.pos = (app.get_width() - fps_text.get_rect().width), 0
 
 counter_text = app.add_text("TIME: 0", 30, (0, 0), colour=(255, 0, 0))
 
@@ -27,8 +31,8 @@ async def timer(ctx: quack.EventContext) -> None:
         last_click = time.time()
         clicks = 0
 
-        click_me.text = f"**CLICK ME! {clicks}**"
-        click_me.pos = (500 - click_me.get_rect().width) // 2, 250
+        click_text.text = f"**CLICK! {clicks}**"
+        click_text.pos = (app.get_width() - click_text.get_rect().width) // 2, app.get_height() // 2
 
         return
 
@@ -40,12 +44,20 @@ async def timer(ctx: quack.EventContext) -> None:
     ctx.element.text = f"TIME: {time.time() - last_click:.1f}"
 
 
-@click_me.on_click
-async def on_click(ctx: quack.EventContext) -> None:
+@fps_text.on_tick
+async def fps_set(ctx: quack.EventContext) -> None:
+    ctx.element.text = f"__YOUR FPS IS: {int(ctx.app.get_fps())}__"
+    ctx.element.pos = (app.get_width() - ctx.element.get_rect().width), 0
+
+
+@cps_box.on_click
+async def on_click(_: quack.EventContext) -> None:
     global clicks
+
     clicks += 1
-    ctx.element.text = f"**CLICK ME! {clicks}**"
-    click_me.pos = (500 - click_me.get_rect().width) // 2, 250
+
+    click_text.text = f"**CLICK! {clicks}**"
+    click_text.pos = (app.get_width() - click_text.get_rect().width) // 2, app.get_height() // 2
 
 
 app.run()

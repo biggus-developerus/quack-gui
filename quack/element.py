@@ -36,6 +36,11 @@ ELEMENT_TASK_TYPE_TO_PYGAME_EVENT: dict[ElementTaskType, int] = {
     ElementTaskType.ON_TICK: -1,
 }
 
+ELEMENT_TASK_OPPOSITE: dict[ElementTaskType, ElementTaskType] = {
+    ElementTaskType.ON_HOVER: ElementTaskType.ON_HOVER_EXIT,
+    ElementTaskType.ON_HOVER_EXIT: ElementTaskType.ON_HOVER,
+}
+
 
 class ElementMixin(ABC):
     def __init__(self, *args, **kwargs):
@@ -102,14 +107,33 @@ class Element(ElementMixin, Animation):
 
         self._callbacks[cb_type] = cb
 
-    def call_cb(self, loop: asyncio.AbstractEventLoop, cb_type: ElementTaskType, event_context: "EventContext") -> None:
+    async def call_cb(
+        self,
+        loop: asyncio.AbstractEventLoop,
+        cb_type: ElementTaskType,
+        event_context: "EventContext",
+    ) -> None:
         if not (cb := self._callbacks.get(cb_type, None)):
             return
 
         task = self._tasks.get(cb_type, None)
+        opp_task = self._tasks.get(ELEMENT_TASK_OPPOSITE.get(cb_type, None), None)
 
-        if task and not task.done() and not task.cancelled():
-            return
+        if opp_task:
+            opp_task.cancel()
+
+            try:
+                await opp_task
+            except asyncio.CancelledError:
+                pass
+
+        if task:
+            task.cancel()
+
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
 
         self._tasks[cb_type] = loop.create_task(cb(event_context))
 

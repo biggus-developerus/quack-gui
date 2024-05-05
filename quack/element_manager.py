@@ -18,14 +18,14 @@ class ElementManager:
     def remove_element(self, element: Element) -> None:
         self._elements.remove(element)
 
-    def add_inputbox(
+    def add_rect(
         self,
         w_and_h: tuple[int, int],
         position: tuple[int, int],
         *,
         colour: tuple[int, int, int] = (255, 255, 255),
-        border_width: int = 3,
-        border_radius=50,
+        border_width: int = 0,
+        border_radius=0,
     ) -> Rect:
         self._elements.append(
             rect := Rect(position, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)

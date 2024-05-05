@@ -16,8 +16,7 @@ from quack.font import FontManager
 class App(ElementManager):
     def __init__(
         self,
-        w: int,
-        h: int,
+        size: tuple[int, int],
         *,
         caption: str = "Quack App",
         display_flags: int = pygame.SHOWN,
@@ -29,7 +28,7 @@ class App(ElementManager):
 
         self._screen: Optional[pygame.Surface] = None
 
-        self._size: tuple[int, int] = (w, h)
+        self._size: tuple[int, int] = size
         self._caption: str = caption
         self._display_flags: int = display_flags
 
@@ -47,6 +46,15 @@ class App(ElementManager):
 
     def get_fps(self) -> int:
         return self.frames_per_sec
+
+    def get_size(self) -> tuple[int, int]:
+        return self._size
+
+    def get_width(self) -> int:
+        return self._size[0]
+
+    def get_height(self) -> int:
+        return self._size[1]
 
     def _pygame_event_loop(self) -> None:
         while True:
@@ -69,7 +77,7 @@ class App(ElementManager):
 
             for element in self.get_elements():
                 element.draw(self._screen)
-                element.call_cb(self._loop, ElementTaskType.ON_TICK, EventContext(self, element))
+                await element.call_cb(self._loop, ElementTaskType.ON_TICK, EventContext(self, element))
 
             pygame.display.flip()
 
