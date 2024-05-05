@@ -3,13 +3,14 @@ __all__ = (
     "unhover_dim",
 )
 
+from typing import Optional
+
 from quack.dispatcher import EventContext
 
-async def hover_dim(ctx: EventContext) -> None:
-    if not getattr(ctx.element, "original_colour", None):
-        ctx.element.original_colour = ctx.element.colour
-        
-    ctx.element.colour = (100, 100, 100)
 
-async def unhover_dim(ctx: EventContext) -> None:  
+async def hover_dim(ctx: EventContext, anim_duration: Optional[float] = None) -> None:
+    ctx.element.colour = tuple(int(value * 0.5) for value in ctx.element.original_colour)
+
+
+async def unhover_dim(ctx: EventContext, anim_duration: Optional[float] = None) -> None:
     ctx.element.colour = ctx.element.original_colour

@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 import pygame
 
 from quack.dispatcher import EventContext
+from quack.element import ElementTaskType
 
 if TYPE_CHECKING:
     from quack.app import App
@@ -29,8 +30,8 @@ async def on_mouse_button_up(app: "App", event: pygame.event.Event) -> None:
             event_ctx.element = element
             event_ctx.mouse_pos = pos
 
-            if left and element._on_click_up_cb:
-                element.dispatch_click_up(app._loop, event_ctx)
+            if left:
+                element.call_cb(app._loop, ElementTaskType.ON_CLICK_UP, event_ctx)
 
             break  # what if some retard wants 2 elements in the same place and also wants to trigeger the event for both???? SOB X50 KYS!?
 
@@ -52,8 +53,8 @@ async def on_mouse_button_down(app: "App", event: pygame.event.Event) -> None:
             event_ctx.element = element
             event_ctx.mouse_pos = pos
 
-            if left and element._on_click_cb:
-                element.dispatch_click(app._loop, event_ctx)
+            if left:
+                element.call_cb(app._loop, ElementTaskType.ON_CLICK, event_ctx)
 
             break  # what if some retard wants 2 elements in the same place and also wants to trigeger the event for both???? SOB X50 KYS!?
 
@@ -69,17 +70,17 @@ async def on_mouse_move(app: "App", event: pygame.event.Event) -> None:
         collides = element.get_rect().collidepoint((pos))
 
         if not collides and element.is_hovered or element.is_clicked:
-            if element.is_hovered and element._on_hover_exit_cb:
+            if element.is_hovered:
                 element.is_hovered = False
 
                 event_ctx.element = element
-                element.dispatch_hover_exit(app._loop, event_ctx)
+                element.call_cb(app._loop, ElementTaskType.ON_HOVER_EXIT, event_ctx)
 
-            if element.is_clicked and element._on_click_up_cb:
+            if element.is_clicked:
                 element.is_clicked = False
 
                 event_ctx.element = element
-                element.dispatch_click_up(app._loop, event_ctx)
+                element.call_cb(app._loop, ElementTaskType.ON_CLICK_UP, event_ctx)
 
             continue
 
@@ -87,9 +88,8 @@ async def on_mouse_move(app: "App", event: pygame.event.Event) -> None:
             event_ctx.element = element
             element.is_hovered = True
 
-            if element._on_hover_cb:
-                element.dispatch_hover(app._loop, event_ctx)
-                return
+            element.call_cb(app._loop, ElementTaskType.ON_HOVER, event_ctx)
+            return
 
 
 async def on_window_leave(app: "App", event: pygame.event.Event) -> None: ...

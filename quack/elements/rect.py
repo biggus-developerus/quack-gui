@@ -1,7 +1,5 @@
 __all__ = ("Rect",)
 
-from typing import Optional
-
 import pygame
 
 from quack.element import Element
@@ -18,12 +16,10 @@ class Rect(Element):
         border_width: int = 0,
         border_radius: int = 0,
     ) -> None:
-        super().__init__(pos)
+        super().__init__(pos, colour)
 
         self.width: int = width
         self.height: int = height
-
-        self.colour: tuple[int, int, int] = colour
 
         self.border_width: int = border_width
         self.border_radius: int = border_radius

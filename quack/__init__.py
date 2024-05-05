@@ -1,4 +1,4 @@
-from .animation_helper import *
+from .animation import *
 from .app import *
 from .dispatcher import *
 from .element import *

@@ -10,6 +10,8 @@ from typing import TYPE_CHECKING, Callable, Coroutine, Optional
 import pygame
 from aenum import Enum
 
+from quack.animation import Animation, AnimationType
+
 if TYPE_CHECKING:
     from quack.dispatcher import EventContext
 
@@ -19,19 +21,32 @@ ElementCB = Callable[["EventContext"], Coroutine[None, None, None]]
 class ElementTaskType(Enum):
     ON_CLICK = 0
     ON_CLICK_UP = 1
+
     ON_HOVER = 2
     ON_HOVER_EXIT = 3
 
 
-class Element(ABC):
-    def __init__(self, pos: tuple[int, int]) -> None:
-        self._on_click_cb: Optional[ElementCB] = None
-        self._on_click_up_cb: Optional[ElementCB] = None
+ELEMENT_TASK_TYPE_TO_PYGAME_EVENT: dict[ElementTaskType, int] = {
+    ElementTaskType.ON_CLICK: pygame.MOUSEBUTTONDOWN,
+    ElementTaskType.ON_CLICK_UP: pygame.MOUSEBUTTONUP,
+    ElementTaskType.ON_HOVER: pygame.MOUSEMOTION,
+    ElementTaskType.ON_HOVER_EXIT: pygame.MOUSEMOTION,
+}
 
-        self._on_hover_cb: Optional[ElementCB] = None
-        self._on_hover_exit_cb: Optional[ElementCB] = None
+
+class ElementMixin(ABC):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class Element(ElementMixin, Animation):
+    def __init__(self, pos: tuple[int, int], colour: tuple[int, int, int] = (255, 255, 255)) -> None:
+        Animation.__init__(self, animation_type=AnimationType.NONE)
 
         self.pos: tuple[int, int] = pos
+
+        self.colour: tuple[int, int, int] = colour
+        self.original_colour: tuple[int, int, int] = colour
 
         self.is_hovered: bool = False
         self.is_clicked: bool = False
@@ -43,6 +58,15 @@ class Element(ABC):
             ElementTaskType.ON_HOVER_EXIT: None,
         }
 
+        self._callbacks: dict[ElementTaskType, Optional[ElementCB]] = {
+            ElementTaskType.ON_CLICK: None,
+            ElementTaskType.ON_CLICK_UP: None,
+            ElementTaskType.ON_HOVER: None,
+            ElementTaskType.ON_HOVER_EXIT: None,
+        }
+
+        self._animation: Optional[Animation] = None
+
     @abstractmethod
     def draw(self, surface: pygame.Surface) -> None: ...
 
@@ -52,77 +76,46 @@ class Element(ABC):
     @abstractmethod
     def get_size(self) -> tuple[int, int]: ...
 
-    def on_click(self, cb: ElementCB) -> None:
-        if not asyncio.iscoroutinefunction(cb):
-            raise ValueError("Element on click callback must be a coroutine function")
+    def change_colour(self, rgb: tuple[int, int, int]) -> None:
+        self.colour = rgb
+        self.original_colour = rgb
 
-        self._on_click_cb = cb
+    def set_animation(self, animation: Animation) -> None:
+        self._animation = animation
+
+    def get_cb(self, cb_type: ElementTaskType) -> Optional[ElementCB]:
+        return self._callbacks.get(cb_type, None)
+
+    def set_cb(self, cb_type: ElementTaskType, cb: ElementCB) -> None:
+        if not asyncio.iscoroutinefunction(cb):
+            raise ValueError(f"Element event type {cb_type} callback must be a coroutine function")
+
+        if self._animation and self._animation.animation_type == ELEMENT_TASK_TYPE_TO_PYGAME_EVENT[cb_type]:
+            raise ValueError(
+                f"Callback type conflict: a callback is already set for an element animation ({self._animation.animation_type.name})"
+            )
+
+        self._callbacks[cb_type] = cb
+
+    def call_cb(self, loop: asyncio.AbstractEventLoop, cb_type: ElementTaskType, event_context: "EventContext") -> None:
+        if not (cb := self._callbacks.get(cb_type, None)):
+            return
+
+        task = self._tasks.get(cb_type, None)
+
+        if task and not task.done() and not task.cancelled():
+            return
+
+        self._tasks[cb_type] = loop.create_task(cb(event_context))
+
+    def on_click(self, cb: ElementCB) -> None:
+        self.set_cb(ElementTaskType.ON_CLICK, cb)
 
     def on_click_up(self, cb: ElementCB) -> None:
-        if not asyncio.iscoroutinefunction(cb):
-            raise ValueError("Element on click up callback must be a coroutine function")
-
-        self._on_click_up_cb = cb
+        self.set_cb(ElementTaskType.ON_CLICK_UP, cb)
 
     def on_hover(self, cb: ElementCB) -> None:
-        if not asyncio.iscoroutinefunction(cb):
-            raise ValueError("Element on hover callback must be a coroutine function")
-
-        self._on_hover_cb = cb
+        self.set_cb(ElementTaskType.ON_HOVER, cb)
 
     def on_hover_exit(self, cb: ElementCB) -> None:
-        if not asyncio.iscoroutinefunction(cb):
-            raise ValueError("Element on hover exit callback must be a coroutine function")
-
-        self._on_hover_exit_cb = cb
-
-    def dispatch_click(self, loop: asyncio.AbstractEventLoop, event_context: "EventContext") -> None:
-        if not self._on_click_cb:
-            return
-
-        task = self._tasks[ElementTaskType.ON_CLICK]
-
-        if task:
-            if not task.done() and not task.cancelled() and not task.cancelling() > 0:
-                return
-
-        self._tasks[ElementTaskType.ON_CLICK] = loop.create_task(self._on_click_cb(event_context))
-
-    def dispatch_click_up(self, loop: asyncio.AbstractEventLoop, event_context: "EventContext") -> None:
-        if not self._on_click_up_cb:
-            return
-
-        task = self._tasks[ElementTaskType.ON_CLICK_UP]
-
-        if task:
-            if not task.done() and not task.cancelled() and not task.cancelling() > 0:
-                return
-
-        self._tasks[ElementTaskType.ON_CLICK_UP] = loop.create_task(self._on_click_up_cb(event_context))
-
-    #TODO: ON_HOVER_START
-    #      ON_HOVER
-    #      ON_HOVER_EXIT
-    def dispatch_hover(self, loop: asyncio.AbstractEventLoop, event_context: "EventContext") -> None:
-        if not self._on_hover_cb:
-            return
-
-        task = self._tasks[ElementTaskType.ON_HOVER]
-
-        if task:
-            if not task.done() and not task.cancelled() and not task.cancelling() > 0:
-                return
-
-        self._tasks[ElementTaskType.ON_HOVER] = loop.create_task(self._on_hover_cb(event_context))
-
-    def dispatch_hover_exit(self, loop: asyncio.AbstractEventLoop, event_context: "EventContext") -> None:
-        if not self._on_hover_exit_cb:
-            return
-
-        task = self._tasks[ElementTaskType.ON_HOVER_EXIT]
-
-        if task:
-            if not task.done() and not task.cancelled() and not task.cancelling() > 0:
-                return
-
-        self._tasks[ElementTaskType.ON_HOVER_EXIT] = loop.create_task(self._on_hover_exit_cb(event_context))
+        self.set_cb(ElementTaskType.ON_HOVER_EXIT, cb)

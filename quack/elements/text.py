@@ -26,7 +26,7 @@ class Text(Element):
         *,
         colour: tuple[int, int, int] = (255, 255, 255),
     ) -> None:
-        super().__init__(pos)
+        super().__init__(pos, colour)
 
         self.text: str = text
         self.size: int = size
@@ -37,8 +37,6 @@ class Text(Element):
             size,
             font_properties=self.font_properties,
         )
-
-        self.colour: tuple[int, int, int] = colour
 
         self._text_surface: Optional[pygame.Surface] = None
 
