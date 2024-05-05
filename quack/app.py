@@ -5,9 +5,10 @@ import time
 from typing import Optional
 
 import pygame
-from quack.element import ElementTaskType
+
 import quack.internal_events as internal_events
 from quack.dispatcher import Dispatcher, EventContext
+from quack.element import ElementTaskType
 from quack.element_manager import ElementManager
 from quack.font import FontManager
 
