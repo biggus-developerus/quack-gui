@@ -5,9 +5,9 @@ import time
 from typing import Optional
 
 import pygame
-
+from quack.element import ElementTaskType
 import quack.internal_events as internal_events
-from quack.dispatcher import Dispatcher
+from quack.dispatcher import Dispatcher, EventContext
 from quack.element_manager import ElementManager
 from quack.font import FontManager
 
@@ -68,6 +68,7 @@ class App(ElementManager):
 
             for element in self.get_elements():
                 element.draw(self._screen)
+                element.call_cb(self._loop, ElementTaskType.ON_TICK, EventContext(self, element))
 
             pygame.display.flip()
 

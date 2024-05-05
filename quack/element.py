@@ -25,12 +25,15 @@ class ElementTaskType(Enum):
     ON_HOVER = 2
     ON_HOVER_EXIT = 3
 
+    ON_TICK = 4
+
 
 ELEMENT_TASK_TYPE_TO_PYGAME_EVENT: dict[ElementTaskType, int] = {
     ElementTaskType.ON_CLICK: pygame.MOUSEBUTTONDOWN,
     ElementTaskType.ON_CLICK_UP: pygame.MOUSEBUTTONUP,
     ElementTaskType.ON_HOVER: pygame.MOUSEMOTION,
     ElementTaskType.ON_HOVER_EXIT: pygame.MOUSEMOTION,
+    ElementTaskType.ON_TICK: -1,
 }
 
 
@@ -51,11 +54,14 @@ class Element(ElementMixin, Animation):
         self.is_hovered: bool = False
         self.is_clicked: bool = False
 
+        # TODO: Loop through the enum ElementTaskType and set the values of the dicts below accordingly instead.
+
         self._tasks: dict[ElementTaskType, Optional[asyncio.Task]] = {
             ElementTaskType.ON_CLICK: None,
             ElementTaskType.ON_CLICK_UP: None,
             ElementTaskType.ON_HOVER: None,
             ElementTaskType.ON_HOVER_EXIT: None,
+            ElementTaskType.ON_TICK: None,
         }
 
         self._callbacks: dict[ElementTaskType, Optional[ElementCB]] = {
@@ -63,6 +69,7 @@ class Element(ElementMixin, Animation):
             ElementTaskType.ON_CLICK_UP: None,
             ElementTaskType.ON_HOVER: None,
             ElementTaskType.ON_HOVER_EXIT: None,
+            ElementTaskType.ON_TICK: None,
         }
 
     @abstractmethod
@@ -117,3 +124,6 @@ class Element(ElementMixin, Animation):
 
     def on_hover_exit(self, cb: ElementCB) -> None:
         self.set_cb(ElementTaskType.ON_HOVER_EXIT, cb)
+
+    def on_tick(self, cb: ElementCB) -> None:
+        self.set_cb(ElementTaskType.ON_TICK, cb)
