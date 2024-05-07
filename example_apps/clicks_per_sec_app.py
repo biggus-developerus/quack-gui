@@ -38,16 +38,6 @@ cps_text_rect = app.add_rect(
 
 cps_text_rect.center_x()
 
-inputbox = app.add_inputbox(
-    (250, 50),
-    (0, 0),
-    colour=(255, 255, 0),
-    border_radius=10,
-)
-
-inputbox.center_x()
-inputbox.set_pos(y=app.get_height() - inputbox.get_height() - 10)
-
 @cps_box.on_tick
 async def on_tick(ctx: quack.EventContext) -> None:
     current_time = time.time()
