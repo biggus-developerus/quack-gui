@@ -39,14 +39,15 @@ async def unhover_dim(ctx: EventContext) -> None:
 
         max_difference = max(abs(colour[i] - original_colour[i]) for i in range(3))
 
-        step_sizes = [(original_colour[i] - colour[i]) / max_difference for i in range(3)]
+        if max_difference != 0: # prevent div by zero
+            step_sizes = [(original_colour[i] - colour[i]) / max_difference for i in range(3)]
 
-        for i in range(max_difference):
-            r = max(0, min(255, int(colour[0] + i * step_sizes[0])))
-            g = max(0, min(255, int(colour[1] + i * step_sizes[1])))
-            b = max(0, min(255, int(colour[2] + i * step_sizes[2])))
+            for i in range(max_difference):
+                r = max(0, min(255, int(colour[0] + i * step_sizes[0])))
+                g = max(0, min(255, int(colour[1] + i * step_sizes[1])))
+                b = max(0, min(255, int(colour[2] + i * step_sizes[2])))
 
-            ctx.element.colour = (r, g, b)
-            await asyncio.sleep(sleep_time)
+                ctx.element.colour = (r, g, b)
+                await asyncio.sleep(sleep_time)
     else:
         ctx.element.colour = original_colour

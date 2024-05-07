@@ -21,28 +21,32 @@ click_text.center()
 cps_text = app.add_text(
     "**YOUR CPS IS: 0**",
     50,
-    (0, 5),
+    (0, 20),
     colour=(255, 255, 0),
 )
 cps_text.center_x()
 
-cps_box = app.add_rect(
-    app.get_size(),
-    (0, 0),
-    colour=(0, 0, 0),
-    border_width=-1,
-)
+cps_box = app.add_rect(app.get_size(), (0, 0), colour=(255, 255, 0), border_width=4, border_radius=10)
 
-cps_text_rect: quack.Rect = app.add_rect(
+cps_text_rect = app.add_rect(
     (cps_text.get_width() + 45, cps_text.get_height() + 10),
-    (0, 0),
-    colour=(100, 100, 0),
-    border_width=1,
+    (0, 13),
+    colour=(255, 255, 0),
+    border_width=2,
     border_radius=10,
 )
 
 cps_text_rect.center_x()
 
+inputbox = app.add_inputbox(
+    (250, 50),
+    (0, 0),
+    colour=(255, 255, 0),
+    border_radius=10,
+)
+
+inputbox.center_x()
+inputbox.set_pos(y=app.get_height() - inputbox.get_height() - 10)
 
 @cps_box.on_tick
 async def on_tick(ctx: quack.EventContext) -> None:

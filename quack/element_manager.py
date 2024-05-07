@@ -3,7 +3,7 @@ __all__ = ("ElementManager",)
 from abc import ABC
 
 from quack.element import Element
-from quack.elements import Rect, Text
+from quack.elements import InputBox, Rect, Text
 from quack.font import FontManager
 
 
@@ -26,14 +26,14 @@ class ElementManager(
     def add_rect(
         self,
         w_and_h: tuple[int, int],
-        position: tuple[int, int],
+        pos: tuple[int, int] = (0, 0),
         *,
         colour: tuple[int, int, int] = (255, 255, 255),
         border_width: int = 0,
         border_radius=0,
     ) -> Rect:
         self._elements.append(
-            rect := Rect(position, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
+            rect := Rect(pos, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
         )
         rect.set_app(self)
         return rect
@@ -42,7 +42,7 @@ class ElementManager(
         self,
         text: str,
         size: int,
-        pos: tuple[int, int],
+        pos: tuple[int, int] = (0, 0),
         *,
         font: str = FontManager.get_default_font(),
         colour: tuple[int, int, int] = (255, 255, 255),
@@ -51,3 +51,31 @@ class ElementManager(
         text_element.set_app(self)
 
         return text_element
+
+    def add_inputbox(
+        self,
+        size: tuple[int, int],
+        pos: tuple[int, int] = (0, 0),
+        *,
+        # place_holder_text: str = "",
+        # place_holder_text_size: int = 10,
+        # place_holder_text_colour: tuple[int, int, int] = (0, 0, 0),
+        colour: tuple[int, int, int] = (255, 255, 255),
+        border_width: int = 0,
+        border_radius: int = 0,
+    ) -> InputBox:
+        inputbox = InputBox(
+            size,
+            pos,
+            # place_holder_text=place_holder_text,
+            # place_holder_text_size=place_holder_text_size,
+            # place_holder_text_colour=place_holder_text_colour,
+            colour=colour,
+            border_width=border_width,
+            border_radius=border_radius,
+        )
+
+        self._elements.append(inputbox)
+        inputbox.set_app(self)
+
+        return inputbox

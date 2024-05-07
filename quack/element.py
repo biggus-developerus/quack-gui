@@ -6,7 +6,7 @@ __all__ = (
 
 import asyncio
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Callable, Coroutine, Optional, Union
+from typing import TYPE_CHECKING, Callable, Coroutine, Optional, Protocol, Union
 
 import pygame
 from aenum import Enum
@@ -18,6 +18,10 @@ if TYPE_CHECKING:
     from quack.dispatcher import EventContext
 
 ElementCB = Callable[["EventContext"], Coroutine[None, None, None]]
+
+
+class HasGetRect(Protocol):
+    def get_rect(self) -> pygame.Rect: ...
 
 
 class ElementTaskType(Enum):
@@ -110,29 +114,63 @@ class Element(ElementMixin, Animation):
     def set_app(self, app: "App") -> None:
         self._app = app
 
-    def set_pos(self, x: Union[ElementPosType, int, None] = None, y: Union[ElementPosType, int, None] = None) -> None:
-        # TODO: The fancy set pos (ElementPosType.CENTER, etc.)
-        self.pos = (x, y)
+    def fancy_set_x_pos(self, x: ElementPosType, surface: Optional[HasGetRect] = None) -> None:
+        if x == ElementPosType.CENTER:
+            self.center_x(surface)
+        elif x == ElementPosType.MOST_LEFT:
+            self.set_pos(x=0)
+        elif x == ElementPosType.MOST_RIGHT:
+            if not self._app:
+                raise ValueError(
+                    f"This element {self.__class__} does not have its _app attr set. Make sure you added this element via the ElementManager (app.add_rect, app.add_element, etc.)"
+                )
 
-    def center(self) -> None:
-        self.center_x()
-        self.center_y()
+            self.set_pos(x=self._app.get_width() - self.get_width())
 
-    def center_x(self) -> None:
-        if not self._app:
+    def fancy_set_y_pos(self, y: ElementPosType, surface: Optional[HasGetRect] = None) -> None: 
+        if y == ElementPosType.CENTER:
+            self.center_y(surface)
+        elif y == ElementPosType.TOP:
+            self.set_pos(y=0)
+        elif y == ElementPosType.BOTTOM:
+            self.set_pos(y=self._app.get_height() - self.get_height())
+
+    def set_pos(self, x: Union[int, None] = None, y: Union[int, None] = None, surface: Optional[HasGetRect] = None) -> None:
+        if x is not None:
+            self.pos = (x, self.pos[1]) if isinstance(x, int) else self.fancy_set_x_pos(x, surface)
+
+        if y is not None:
+            self.pos = (self.pos[0], y) if isinstance(y, int) else self.fancy_set_y_pos(y, surface)
+
+    def center(self, surface: Optional[HasGetRect] = None) -> None:
+        self.center_x(surface)
+        self.center_y(surface)
+
+    def center_x(self, surface: Optional[HasGetRect] = None) -> None:
+        if not self._app and not surface:
             raise ValueError(
                 f"This element {self.__class__} does not have its _app attr set. Make sure you added this element via the ElementManager (app.add_rect, app.add_element, etc.)"
             )
 
-        self.pos = (self._app.get_width() - self.get_width()) // 2, self.pos[1]
+        if surface:
+            x = surface.get_rect().x + (surface.get_width() - self.get_width()) // 2
+        else:
+            x = (self._app._screen.get_rect().width - self.get_width()) // 2
 
-    def center_y(self) -> None:
-        if not self._app:
+        self.set_pos(x=x)
+
+    def center_y(self, surface: Optional[HasGetRect] = None) -> None:
+        if not self._app and not surface:
             raise ValueError(
                 f"This element {self.__class__} does not have its _app attr set. Make sure you added this element via the ElementManager (app.add_rect, app.add_element, etc.)"
             )
 
-        self.pos = (self.pos[0], self._app.get_height() // 2)
+        if surface:
+            y = surface.get_rect().y + (surface.get_height() - self.get_height()) // 2
+        else:
+            y = (self._app._screen.get_rect().height - self.get_height()) // 2
+
+        self.set_pos(y=y)
 
     def change_colour(self, rgb: tuple[int, int, int]) -> None:
         self.colour = rgb

@@ -2,7 +2,6 @@ __all__ = ("App",)
 
 import asyncio
 import time
-from typing import Optional
 
 import pygame
 
@@ -25,8 +24,10 @@ class App(ElementManager):
         super().__init__()
 
         pygame.init()
+        FontManager.init()
+        pygame.display.set_caption(caption)
 
-        self._screen: Optional[pygame.Surface] = None
+        self._screen: pygame.Surface = pygame.display.set_mode(size, flags=display_flags)
 
         self._size: tuple[int, int] = size
         self._caption: str = caption
@@ -102,11 +103,6 @@ class App(ElementManager):
     def run(self) -> None:
         self._init_internal_events()
         self._running = True
-
-        FontManager.init()
-        pygame.display.set_caption(self._caption)
-
-        self._screen = pygame.display.set_mode(self._size, flags=self._display_flags)
 
         t1 = self._loop.run_in_executor(None, self._pygame_event_loop)
         t2 = self._loop.create_task(self._handle_events())
