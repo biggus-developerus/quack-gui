@@ -139,10 +139,16 @@ class Element(ElementMixin, Animation):
         self, x: Union[int, None] = None, y: Union[int, None] = None, surface: Optional[HasGetRect] = None
     ) -> None:
         if x is not None:
-            self.pos = (x, self.pos[1]) if isinstance(x, int) else self.fancy_set_x_pos(x, surface)
+            if isinstance(x, ElementPosType):
+                self.fancy_set_x_pos(x, surface)
+            else:
+                self.pos = (x, self.pos[1])
 
         if y is not None:
-            self.pos = (self.pos[0], y) if isinstance(y, int) else self.fancy_set_y_pos(y, surface)
+            if isinstance(y, ElementPosType):
+                self.fancy_set_y_pos(y, surface)
+            else:
+                self.pos = (self.pos[0], y)
 
     def center(self, surface: Optional[HasGetRect] = None) -> None:
         self.center_x(surface)
