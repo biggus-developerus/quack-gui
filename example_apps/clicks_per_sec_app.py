@@ -18,12 +18,7 @@ click_text = app.add_text(
 click_text.apply_animation(quack.AnimationType.HOVER_DIM, 0.2)
 click_text.center()
 
-cps_text = app.add_text(
-    "**YOUR CPS IS: 0**",
-    50,
-    (0, 20),
-    colour=(255, 255, 0),
-)
+cps_text = app.add_text("**YOUR CPS IS: 0**", 50, (0, 20), colour=(255, 255, 0))
 cps_text.center_x()
 
 cps_box = app.add_rect(app.get_size(), (0, 0), colour=(255, 255, 0), border_width=4, border_radius=10)
@@ -37,6 +32,7 @@ cps_text_rect = app.add_rect(
 )
 
 cps_text_rect.center_x()
+
 
 @cps_box.on_tick
 async def on_tick(ctx: quack.EventContext) -> None:

@@ -127,7 +127,7 @@ class Element(ElementMixin, Animation):
 
             self.set_pos(x=self._app.get_width() - self.get_width())
 
-    def fancy_set_y_pos(self, y: ElementPosType, surface: Optional[HasGetRect] = None) -> None: 
+    def fancy_set_y_pos(self, y: ElementPosType, surface: Optional[HasGetRect] = None) -> None:
         if y == ElementPosType.CENTER:
             self.center_y(surface)
         elif y == ElementPosType.TOP:
@@ -135,7 +135,9 @@ class Element(ElementMixin, Animation):
         elif y == ElementPosType.BOTTOM:
             self.set_pos(y=self._app.get_height() - self.get_height())
 
-    def set_pos(self, x: Union[int, None] = None, y: Union[int, None] = None, surface: Optional[HasGetRect] = None) -> None:
+    def set_pos(
+        self, x: Union[int, None] = None, y: Union[int, None] = None, surface: Optional[HasGetRect] = None
+    ) -> None:
         if x is not None:
             self.pos = (x, self.pos[1]) if isinstance(x, int) else self.fancy_set_x_pos(x, surface)
 

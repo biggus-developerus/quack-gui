@@ -39,7 +39,7 @@ async def unhover_dim(ctx: EventContext) -> None:
 
         max_difference = max(abs(colour[i] - original_colour[i]) for i in range(3))
 
-        if max_difference != 0: # prevent div by zero
+        if max_difference != 0:  # prevent div by zero
             step_sizes = [(original_colour[i] - colour[i]) / max_difference for i in range(3)]
 
             for i in range(max_difference):
