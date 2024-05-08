@@ -8,19 +8,18 @@ app.set_background_colour(20, 20, 20)
 app.clicks = 0
 app.last_click = time.time()
 
+cps_box = app.add_rect(app.get_size(), colour=(255, 255, 0), border_width=4, border_radius=10)
+
 click_text = app.add_text(
     "**CLICK!** ",
     100,
     colour=(255, 255, 0),
 )
 
-click_text.apply_animation(quack.AnimationType.HOVER_DIM, 0.2)
+click_text.apply_animation(quack.AnimationType.HOVER_DIM, 0.7)
 click_text.center()
 
 cps_text = app.add_text("**YOUR CPS IS: 0**", 50, colour=(255, 255, 0))
-cps_text.set_pos(quack.ElementPosType.CENTER, 20)
-
-cps_box = app.add_rect(app.get_size(), colour=(255, 255, 0), border_width=4, border_radius=10)
 
 cps_text_rect = app.add_rect(
     (cps_text.get_width() + 45, cps_text.get_height() + 10),
@@ -30,6 +29,8 @@ cps_text_rect = app.add_rect(
 )
 
 cps_text_rect.set_pos(quack.ElementPosType.CENTER, 13)
+cps_text.center(cps_text_rect)
+
 
 @cps_box.on_tick
 async def on_tick(ctx: quack.EventContext) -> None:
