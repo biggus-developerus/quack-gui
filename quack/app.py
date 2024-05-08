@@ -122,8 +122,3 @@ class App(ElementManager):
     def stop(self) -> None:
         self._running = False
         self._loop.stop()
-
-
-if __name__ == "__main__":
-    app = App(800, 600)
-    app.run()
