@@ -36,7 +36,7 @@ async def unhover_dim(ctx: EventContext) -> None:
     if ctx.element.animation_duration:
         max_difference = max(abs(colour[i] - original_colour[i]) for i in range(3))
 
-        if max_difference > 0: 
+        if max_difference > 0:
             step_sizes = [(original_colour[i] - colour[i]) / max_difference for i in range(3)]
             sleep_time = ctx.element.animation_duration / max_difference
 
