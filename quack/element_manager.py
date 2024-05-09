@@ -1,9 +1,10 @@
 __all__ = ("ElementManager",)
 
 from abc import ABC
+from typing import Union
 
 from quack.element import Element
-from quack.elements import InputBox, Rect, Text
+from quack.elements import Image, InputBox, Rect, Text
 from quack.font import FontManager
 
 
@@ -32,10 +33,8 @@ class ElementManager(
         border_width: int = 0,
         border_radius=0,
     ) -> Rect:
-        self._elements.append(
-            rect := Rect(pos, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
-        )
-        rect.set_app(self)
+        rect = Rect(pos, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
+        self.add_element(rect)
         return rect
 
     def add_text(
@@ -47,8 +46,9 @@ class ElementManager(
         font: str = FontManager.get_default_font(),
         colour: tuple[int, int, int] = (255, 255, 255),
     ) -> Text:
-        self._elements.append(text_element := Text(text, size, font, pos, colour=colour))
-        text_element.set_app(self)
+        text_element = Text(text, size, font, pos, colour=colour)
+
+        self.add_element(text_element)
 
         return text_element
 
@@ -75,7 +75,11 @@ class ElementManager(
             border_radius=border_radius,
         )
 
-        self._elements.append(inputbox)
-        inputbox.set_app(self)
+        self.add_element(inputbox)
 
         return inputbox
+
+    def add_image(self, path_or_data: Union[str, bytes], pos: tuple[int, int] = (0, 0)) -> Image:
+        image = Image(path_or_data, pos)
+        self.add_element(image)
+        return image

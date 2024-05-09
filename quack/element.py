@@ -64,7 +64,7 @@ class ElementMixin(ABC):
 
 
 class Element(ElementMixin, Animation):
-    def __init__(self, pos: tuple[int, int], colour: tuple[int, int, int] = (255, 255, 255)) -> None:
+    def __init__(self, pos: tuple[int, int] = (0, 0, 0), colour: tuple[int, int, int] = (255, 255, 255)) -> None:
         Animation.__init__(self, animation_type=AnimationType.NONE)
 
         self.pos: tuple[int, int] = pos

@@ -1,5 +1,4 @@
 import time
-
 import quack
 
 app = quack.App((700, 700), tick=165)
@@ -16,7 +15,7 @@ click_text = app.add_text(
     colour=(255, 255, 0),
 )
 
-click_text.apply_animation(quack.AnimationType.HOVER_DIM, 0.7)
+click_text.apply_animation(quack.AnimationType.HOVER_DIM, 0.5)
 click_text.center()
 
 cps_text = app.add_text("**YOUR CPS IS: 0**", 50, colour=(255, 255, 0))
@@ -30,6 +29,10 @@ cps_text_rect = app.add_rect(
 
 cps_text_rect.set_pos(quack.ElementPosType.CENTER, 13)
 cps_text.center(cps_text_rect)
+
+image = app.add_image("example_apps/test_image.png", (10, 10))
+image.resize(100, 100)
+image.set_alpha(169)
 
 
 @cps_box.on_tick
