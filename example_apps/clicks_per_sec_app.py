@@ -1,4 +1,5 @@
 import time
+
 import quack
 
 app = quack.App((700, 700), tick=165)
