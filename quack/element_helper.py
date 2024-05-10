@@ -1,4 +1,4 @@
-__all__ = ("ElementManager",)
+__all__ = ("ElementHelper",)
 
 from abc import ABC
 from typing import Union
@@ -8,7 +8,7 @@ from quack.elements import Image, InputBox, Rect, Text
 from quack.font import FontManager
 
 
-class ElementManager(
+class ElementHelper(
     ABC
 ):  # SOB X50 MUST BE INHERITED BY APP AND APP ALONE, OR ELSE Element WOULD GET CONFUSEDDDD!!!!!!!!!!!!!
     def __init__(self) -> None:

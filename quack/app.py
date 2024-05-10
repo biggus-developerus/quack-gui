@@ -8,11 +8,11 @@ import pygame
 import quack.internal_events as internal_events
 from quack.dispatcher import Dispatcher, EventContext
 from quack.element import ElementTaskType
-from quack.element_manager import ElementManager
+from quack.element_helper import ElementHelper
 from quack.font import FontManager
 
 
-class App(ElementManager):
+class App(ElementHelper):
     def __init__(
         self,
         size: tuple[int, int],
