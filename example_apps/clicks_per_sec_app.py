@@ -1,5 +1,4 @@
 import time
-
 import quack
 
 app = quack.App((700, 700), tick=165)
@@ -31,7 +30,7 @@ cps_text_rect = app.add_rect(
 cps_text_rect.set_pos(quack.ElementPosType.CENTER, 13)
 cps_text.center(cps_text_rect)
 
-image = app.add_image("example_apps/test_image.png", (10, 10))
+image = app.add_image("example_apps/data/test_image.png", (10, 10))
 image.resize(100, 100)
 image.set_alpha(169)
 
