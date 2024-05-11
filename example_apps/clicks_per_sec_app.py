@@ -10,12 +10,7 @@ app.last_click = time.time()
 
 cps_box = app.add_rect(app.get_size(), colour=(255, 255, 0), border_width=4, border_radius=10)
 
-click_text = app.add_text(
-    "**CLICK!** ",
-    100,
-    colour=(255, 255, 0),
-)
-
+click_text = app.add_header_text("CLICK!", colour=(255, 255, 0))
 click_text.apply_animation(quack.AnimationType.HOVER_DIM, 0.5)
 click_text.center()
 
