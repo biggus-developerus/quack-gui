@@ -1,11 +1,12 @@
 __all__ = ("ElementHelper",)
 
 from abc import ABC, abstractmethod
-from typing import Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from quack.element import Element
 from quack.elements import Image, InputBox, Rect, Text
 from quack.font import FontManager
+
 
 class ElementHelper(
     ABC
@@ -15,7 +16,7 @@ class ElementHelper(
 
     @abstractmethod
     def get_width(self) -> int: ...
-    
+
     @abstractmethod
     def get_height(self) -> int: ...
 
@@ -73,7 +74,6 @@ class ElementHelper(
         while text_element.font._pfont.size(text_element.text)[0] > max_width:
             font_size -= 1
             text_element = Text(f"**{text}**", font_size, font, pos, colour=colour)
-
 
         self.add_element(text_element)
 
