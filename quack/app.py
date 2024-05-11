@@ -98,6 +98,9 @@ class App(ElementHelper):
         Dispatcher.add_event(pygame.MOUSEBUTTONDOWN, internal_events.on_mouse_button_down)
         Dispatcher.add_event(pygame.MOUSEMOTION, internal_events.on_mouse_move)
 
+        Dispatcher.add_event(pygame.KEYDOWN, internal_events.on_key_down)
+        Dispatcher.add_event(pygame.KEYUP, internal_events.on_key_up)
+
         Dispatcher.add_event(pygame.WINDOWLEAVE, internal_events.on_window_leave)
 
     def run(self) -> None:

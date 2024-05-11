@@ -31,7 +31,10 @@ class ElementTaskType(Enum):
     ON_HOVER = 2
     ON_HOVER_EXIT = 3
 
-    ON_TICK = 4
+    ON_KEY = 4
+    ON_KEY_UP = 5
+
+    ON_TICK = 6
 
 
 class ElementPosType(Enum):
@@ -49,6 +52,8 @@ ELEMENT_TASK_TYPE_TO_PYGAME_EVENT: dict[ElementTaskType, int] = {
     ElementTaskType.ON_CLICK_UP: pygame.MOUSEBUTTONUP,
     ElementTaskType.ON_HOVER: pygame.MOUSEMOTION,
     ElementTaskType.ON_HOVER_EXIT: pygame.MOUSEMOTION,
+    ElementTaskType.ON_KEY: pygame.KEYDOWN,
+    ElementTaskType.ON_KEY_UP: pygame.KEYUP,
     ElementTaskType.ON_TICK: -1,
 }
 
@@ -73,6 +78,7 @@ class Element(ElementMixin, Animation):
         self.original_colour: tuple[int, int, int] = colour
 
         self.is_hovered: bool = False
+        self.is_activated: bool = False
         self.is_clicked: bool = False
 
         self._app: Optional["App"] = None
@@ -84,6 +90,8 @@ class Element(ElementMixin, Animation):
             ElementTaskType.ON_CLICK_UP: None,
             ElementTaskType.ON_HOVER: None,
             ElementTaskType.ON_HOVER_EXIT: None,
+            ElementTaskType.ON_KEY: None,
+            ElementTaskType.ON_KEY_UP: None,
             ElementTaskType.ON_TICK: None,
         }
 
@@ -92,6 +100,8 @@ class Element(ElementMixin, Animation):
             ElementTaskType.ON_CLICK_UP: None,
             ElementTaskType.ON_HOVER: None,
             ElementTaskType.ON_HOVER_EXIT: None,
+            ElementTaskType.ON_KEY: None,
+            ElementTaskType.ON_KEY_UP: None,
             ElementTaskType.ON_TICK: None,
         }
 
@@ -242,6 +252,12 @@ class Element(ElementMixin, Animation):
 
     def on_hover_exit(self, cb: ElementCB) -> None:
         self.set_cb(ElementTaskType.ON_HOVER_EXIT, cb)
+
+    def on_key(self, cb: ElementTaskType) -> None:
+        self.set_cb(ElementTaskType.ON_KEY, cb)
+
+    def on_key_up(self, cb: ElementTaskType) -> None:
+        self.set_cb(ElementTaskType.ON_KEY_UP, cb)
 
     def on_tick(self, cb: ElementCB) -> None:
         self.set_cb(ElementTaskType.ON_TICK, cb)

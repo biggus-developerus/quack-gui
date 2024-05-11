@@ -26,6 +26,7 @@ class EventContext:
     app: Optional["App"] = None
     element: Optional["Element"] = None
     mouse_pos: Optional[tuple[int, int]] = None
+    key_pressed: Optional[str] = None
 
 
 class Dispatcher:
