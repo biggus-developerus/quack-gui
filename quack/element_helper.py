@@ -1,18 +1,23 @@
 __all__ = ("ElementHelper",)
 
-from abc import ABC
-from typing import Union
+from abc import ABC, abstractmethod
+from typing import Union, TYPE_CHECKING
 
 from quack.element import Element
 from quack.elements import Image, InputBox, Rect, Text
 from quack.font import FontManager
-
 
 class ElementHelper(
     ABC
 ):  # SOB X50 MUST BE INHERITED BY APP AND APP ALONE, OR ELSE Element WOULD GET CONFUSEDDDD!!!!!!!!!!!!!
     def __init__(self) -> None:
         self._elements: list[Element] = []
+
+    @abstractmethod
+    def get_width(self) -> int: ...
+    
+    @abstractmethod
+    def get_height(self) -> int: ...
 
     def get_elements(self) -> list[Element]:
         return self._elements
@@ -47,6 +52,28 @@ class ElementHelper(
         colour: tuple[int, int, int] = (255, 255, 255),
     ) -> Text:
         text_element = Text(text, size, font, pos, colour=colour)
+
+        self.add_element(text_element)
+
+        return text_element
+
+    def add_header_text(
+        self,
+        text: str,
+        pos: tuple[int, int] = (0, 0),
+        *,
+        font: str = FontManager.get_default_font(),
+        colour: tuple[int, int, int] = (255, 255, 255),
+    ) -> None:
+        max_width = self.get_width() // 2
+        font_size = self.get_width()
+
+        text_element = Text(f"**{text}**", font_size, font, pos, colour=colour)
+
+        while text_element.font._pfont.size(text_element.text)[0] > max_width:
+            font_size -= 1
+            text_element = Text(f"**{text}**", font_size, font, pos, colour=colour)
+
 
         self.add_element(text_element)
 
