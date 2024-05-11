@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 # TODO: Address the issue of calling the CBs of two different elements when they overshadow each other
 
+
 async def on_quit(app: "App", _: pygame.event.Event) -> None:
     app.stop()
 
@@ -52,14 +53,14 @@ async def on_mouse_button_down(app: "App", event: pygame.event.Event) -> None:
         if element.get_rect().collidepoint((pos)):
             event_ctx.element = element
             event_ctx.mouse_pos = pos
-            
+
             if left:
                 element.is_clicked = True
                 element.is_activated = True
                 await element.call_cb(app._loop, ElementTaskType.ON_CLICK, event_ctx)
         else:
             if element.is_activated and left:
-                element.is_activated = False # TODO: Cb for this ig?
+                element.is_activated = False  # TODO: Cb for this ig?
 
 
 async def on_mouse_move(app: "App", event: pygame.event.Event) -> None:
@@ -96,6 +97,7 @@ async def on_mouse_move(app: "App", event: pygame.event.Event) -> None:
 
             await element.call_cb(app._loop, ElementTaskType.ON_HOVER, event_ctx)
 
+
 async def on_key_down(app: "App", event: pygame.event.Event) -> None:
     unicode, key, mod = event.unicode, event.key, event.mod
 
@@ -107,6 +109,7 @@ async def on_key_down(app: "App", event: pygame.event.Event) -> None:
             event_ctx.element = element
             await element.call_cb(app._loop, ElementTaskType.ON_KEY, event_ctx)
 
+
 async def on_key_up(app: "App", event: pygame.event.Event) -> None:
     unicode, key, mod = event.unicode, event.key, event.mod
 
@@ -117,5 +120,6 @@ async def on_key_up(app: "App", event: pygame.event.Event) -> None:
         if element.is_activated:
             event_ctx.element = element
             await element.call_cb(app._loop, ElementTaskType.ON_KEY_UP, event_ctx)
+
 
 async def on_window_leave(app: "App", event: pygame.event.Event) -> None: ...

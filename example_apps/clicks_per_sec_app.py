@@ -39,6 +39,7 @@ inp = app.add_inputbox((300, 50), colour=(255, 255, 0), border_radius=50, border
 inp.set_pos(quack.ElementPosType.CENTER, quack.ElementPosType.BOTTOM)
 inp.set_pos(y=inp.pos[1] - 10)
 
+
 @cps_box.on_tick
 async def on_tick(ctx: quack.EventContext) -> None:
     current_time = time.time()

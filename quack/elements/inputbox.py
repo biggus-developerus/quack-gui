@@ -2,9 +2,8 @@ __all__ = ("InputBox",)
 
 import pygame
 
-from quack.elements.rect import Rect
 from quack.dispatcher import EventContext
-
+from quack.elements.rect import Rect
 from quack.elements.text import Text
 
 
@@ -44,5 +43,7 @@ class InputBox(Rect):
     async def _key_cb(self, ctx: EventContext) -> None:
         self._user_text.text += ctx.key_pressed
 
-        if self._user_text.get_width() >= (self.width - 10) or (self.character_limit != -1 and len(self._user_text.text) > self.character_limit):
+        if self._user_text.get_width() >= (self.width - 10) or (
+            self.character_limit != -1 and len(self._user_text.text) > self.character_limit
+        ):
             self._user_text.text = self._user_text.text[:-1]
