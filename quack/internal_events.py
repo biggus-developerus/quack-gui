@@ -102,7 +102,8 @@ async def on_key_down(app: "App", event: pygame.event.Event) -> None:
     unicode, key, mod = event.unicode, event.key, event.mod
 
     event_ctx = EventContext(app)
-    event_ctx.key_pressed = unicode
+    event_ctx.key_unicode = unicode
+    event_ctx.key = key
 
     for element in app.get_elements():
         if element.is_activated:

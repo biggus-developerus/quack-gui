@@ -41,7 +41,15 @@ class InputBox(Rect):
         self._user_text.draw(surface)
 
     async def _key_cb(self, ctx: EventContext) -> None:
-        self._user_text.text += ctx.key_pressed
+        if ctx.key == pygame.K_BACKSPACE:
+            if len(self._user_text.text) == 0:
+                return
+            
+            self._user_text.text = self._user_text.text[:-1]
+
+            return
+        
+        self._user_text.text += ctx.key_unicode
 
         if self._user_text.get_width() >= (self.width - 10) or (
             self.character_limit != -1 and len(self._user_text.text) > self.character_limit
