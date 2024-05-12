@@ -65,7 +65,7 @@ class ElementHelper(
         *,
         font: str = FontManager.get_default_font(),
         colour: tuple[int, int, int] = (255, 255, 255),
-    ) -> None:
+    ) -> Text:
         max_width = self.get_width() // 2
         font_size = self.get_width()
 
