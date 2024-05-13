@@ -44,11 +44,11 @@ class InputBox(Rect):
         if ctx.key == pygame.K_BACKSPACE:
             if len(self._user_text.text) == 0:
                 return
-            
+
             self._user_text.text = self._user_text.text[:-1]
 
             return
-        
+
         self._user_text.text += ctx.key_unicode
 
         if self._user_text.get_width() >= (self.width - 10) or (
