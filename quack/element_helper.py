@@ -1,10 +1,10 @@
 __all__ = ("ElementHelper",)
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Union
+from typing import Union
 
 from quack.element import Element
-from quack.elements import Image, InputBox, Rect, Text
+from quack.elements import Button, Image, InputBox, Rect, Text
 from quack.font import FontManager
 
 
@@ -42,6 +42,35 @@ class ElementHelper(
         rect = Rect(pos, *w_and_h, colour=colour, border_width=border_width, border_radius=border_radius)
         self.add_element(rect)
         return rect
+
+    def add_button(
+        self,
+        button_text: str,
+        w_and_h: tuple[int, int],
+        pos: tuple[int, int],
+        *,
+        colour: tuple[int, int, int] = (255, 255, 255),
+        btn_text_colour: tuple[int, int, int] = (0, 0, 0),
+        btn_text_font: str = "",
+        btn_text_size: int = 30,
+        border_width: int = 0,
+        border_radius: int = 0,
+    ) -> Button:
+        btn = Button(
+            pos,
+            button_text,
+            btn_text_size,
+            *w_and_h,
+            colour,
+            btn_text_colour=btn_text_colour,
+            border_width=border_width,
+            border_radius=border_radius,
+            btn_text_font=btn_text_font,
+        )
+
+        self.add_element(btn)
+
+        return btn
 
     def add_text(
         self,
