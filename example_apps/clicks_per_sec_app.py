@@ -1,5 +1,6 @@
-import time
 import random
+import time
+
 import quack
 
 app = quack.App((700, 700), tick=165)
@@ -34,14 +35,18 @@ image.set_alpha(169)
 # inp.set_pos(quack.ElementPosType.CENTER, quack.ElementPosType.BOTTOM)
 # inp.set_pos(y=inp.pos[1] - 10)
 
-btn = app.add_button("BTN", (250, 50), (0, 0), colour=(255, 255, 0), border_radius=10)
-btn.set_pos(quack.ElementPosType.CENTER, quack.ElementPosType.BOTTOM)
-btn.set_pos(y=btn.pos[-1] - 50)
+btn = app.add_button("BTN", (250, 50), colour=(255, 255, 0), border_radius=10)
+btn.set_pos(quack.ElementPosType.CENTER, quack.ElementPosType.BOTTOM - 50)
+
+other_btn = app.add_button("BTN2", (250, 50), colour=(255, 255, 0), border_radius=10)
+other_btn.set_pos(quack.ElementPosType.CENTER, quack.ElementPosType.BOTTOM)
+
 
 @btn.on_click
 async def btn_click(ctx: quack.EventContext):
     rand_pos = random.randint(0, ctx.app.get_width()), random.randint(0, ctx.app.get_height())
     ctx.app.add_text("random pos", 20, rand_pos, colour=(255, 255, 0))
+
 
 @cps_box.on_tick
 async def on_tick(ctx: quack.EventContext) -> None:
