@@ -43,7 +43,7 @@ class App(ElementHelper):
         self.background_colour: tuple[int, int, int] = (0, 0, 0)
 
     def set_background_colour(self, r: int, g: int, b: int) -> None:
-        self._background_colour = (r, g, b)
+        self.background_colour = (r, g, b)
 
     def get_fps(self) -> int:
         return self.frames_per_sec
@@ -74,7 +74,7 @@ class App(ElementHelper):
         ticks = 0
 
         while self._running:
-            self._screen.fill(self._background_colour)
+            self._screen.fill(self.background_colour)
 
             for element in self.get_elements():
                 element.draw(self._screen)
