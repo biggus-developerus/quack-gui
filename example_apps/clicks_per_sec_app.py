@@ -36,10 +36,10 @@ image.set_alpha(169)
 # inp.set_pos(y=inp.pos[1] - 10)
 
 btn = app.add_button("BTN", (250, 50), colour=(255, 255, 0), border_radius=10)
-btn.set_pos(quack.ElementPosType.CENTER, quack.ElementPosType.BOTTOM - 50)
+btn.set_pos(quack.ElementPosType.CENTER, quack.ElementPosType.BOTTOM - 100)
 
 other_btn = app.add_button("BTN2", (250, 50), colour=(255, 255, 0), border_radius=10)
-other_btn.set_pos(quack.ElementPosType.CENTER, quack.ElementPosType.BOTTOM)
+other_btn.set_pos(quack.ElementPosType.CENTER, quack.ElementPosType.BOTTOM - 10)
 
 
 @btn.on_click
