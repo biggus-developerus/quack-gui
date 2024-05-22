@@ -47,7 +47,7 @@ class ElementHelper(
         self,
         button_text: str,
         w_and_h: tuple[int, int],
-        pos: tuple[int, int],
+        pos: tuple[int, int] = (0, 0),
         *,
         colour: tuple[int, int, int] = (255, 255, 255),
         btn_text_colour: tuple[int, int, int] = (0, 0, 0),
