@@ -46,6 +46,19 @@ class ElementPosType(Enum):
     MOST_LEFT = 3
     MOST_RIGHT = 4
 
+    # __add__ & __sub__
+    # idea is to be able to add/sub the resulting values
+    # i.e ElementPosType.BOTTOM is 500 and the user passed
+    # ElementPosType.BOTTOM - 50, the resulting Y pos would
+    # be 500 - 50 (450), better in case you just want to adjust
+    # the pos to your liking
+
+    def __add__(self, num: int) -> tuple["ElementPosType", int]:
+        return self, num
+
+    def __sub__(self, num: int) -> tuple["ElementPosType", int]:
+        return self, num * -1
+
 
 ELEMENT_TASK_TYPE_TO_PYGAME_EVENT: dict[ElementTaskType, int] = {
     ElementTaskType.ON_CLICK: pygame.MOUSEBUTTONDOWN,
@@ -124,7 +137,12 @@ class Element(ElementMixin, Animation):
     def set_app(self, app: "App") -> None:
         self._app = app
 
-    def fancy_set_x_pos(self, x: ElementPosType, surface: Optional[HasGetRect] = None) -> None:
+    def fancy_set_x_pos(
+        self, x: Union[ElementPosType, tuple[ElementPosType, int]], surface: Optional[HasGetRect] = None
+    ) -> None:
+        val: Optional[int] = None
+        if isinstance(x, tuple):
+            x, val = x
         if x == ElementPosType.CENTER:
             self.center_x(surface)
         elif x == ElementPosType.MOST_LEFT:
@@ -137,7 +155,16 @@ class Element(ElementMixin, Animation):
 
             self.set_pos(x=self._app.get_width() - self.get_width())
 
-    def fancy_set_y_pos(self, y: ElementPosType, surface: Optional[HasGetRect] = None) -> None:
+        if val is not None:
+            self.set_pos(x=self.pos[0] + val)
+
+    def fancy_set_y_pos(
+        self, y: Union[ElementPosType, tuple[ElementPosType, int]], surface: Optional[HasGetRect] = None
+    ) -> None:
+        val: Optional[int] = None
+
+        if isinstance(y, tuple):
+            y, val = y
         if y == ElementPosType.CENTER:
             self.center_y(surface)
         elif y == ElementPosType.TOP:
@@ -145,17 +172,23 @@ class Element(ElementMixin, Animation):
         elif y == ElementPosType.BOTTOM:
             self.set_pos(y=self._app.get_height() - self.get_height())
 
+        if val is not None:
+            self.set_pos(y=self.pos[-1] + val)
+
     def set_pos(
-        self, x: Union[int, None] = None, y: Union[int, None] = None, surface: Optional[HasGetRect] = None
+        self,
+        x: Union[int, ElementPosType, tuple[ElementPosType, int]] = None,
+        y: Union[int, ElementPosType, tuple[ElementPosType, int]] = None,
+        surface: Optional[HasGetRect] = None,
     ) -> None:
         if x is not None:
-            if isinstance(x, ElementPosType):
+            if isinstance(x, (ElementPosType, tuple)):
                 self.fancy_set_x_pos(x, surface)
             else:
                 self.pos = (x, self.pos[1])
 
         if y is not None:
-            if isinstance(y, ElementPosType):
+            if isinstance(y, (ElementPosType, tuple)):
                 self.fancy_set_y_pos(y, surface)
             else:
                 self.pos = (self.pos[0], y)
