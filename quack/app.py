@@ -59,7 +59,7 @@ class App(ElementHelper):
 
     def _pygame_event_loop(self) -> None:
         while True:
-            event = pygame.event.wait()
+            event = pygame.event.wait(1_000)
             asyncio.run_coroutine_threadsafe(self._asyncio_queue.put(event), self._loop)
 
     async def _handle_events(self) -> None:
