@@ -34,6 +34,9 @@ class InputBox(Rect):
 
         self.on_key(self._key_cb)
 
+    def get_input(self) -> str:
+        return self._user_text.text
+
     def draw(self, surface: pygame.Surface) -> None:
         super().draw(surface)
 
