@@ -57,10 +57,14 @@ class App(ElementHelper):
     def get_height(self) -> int:
         return self._size[1]
 
-    def _pygame_event_loop(self) -> None:
+    async def _pygame_event_loop(self) -> None:
         while True:
-            event = pygame.event.wait(1_000)
-            asyncio.run_coroutine_threadsafe(self._asyncio_queue.put(event), self._loop)
+            event = pygame.event.poll()
+
+            if event.type != pygame.NOEVENT:
+                await self._asyncio_queue.put(event)
+
+            await asyncio.sleep(0)
 
     async def _handle_events(self) -> None:
         while self._running:
@@ -107,7 +111,7 @@ class App(ElementHelper):
         self._init_internal_events()
         self._running = True
 
-        t1 = self._loop.run_in_executor(None, self._pygame_event_loop)
+        t1 = self._loop.create_task(self._pygame_event_loop())
         t2 = self._loop.create_task(self._handle_events())
         t3 = self._loop.create_task(self._draw_loop())
 
